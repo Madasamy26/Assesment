@@ -10,6 +10,8 @@ const getClientEnvironment = require('./env')
 const paths = require('./paths')
 const commonConfig = require('./webpack.config.common')
 
+
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/'
@@ -31,8 +33,10 @@ module.exports = configMerge(commonConfig, {
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
   entry: [
+
     'react-hot-loader/patch',
     require.resolve('react-dev-utils/webpackHotDevClient'),
+    'babel-polyfill',
     // Finally, this is your app's code:
     paths.appIndexJs,
     // We include the app code last so that if there is a runtime error during

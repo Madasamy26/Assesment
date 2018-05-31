@@ -11,6 +11,7 @@ const getClientEnvironment = require('./env')
 const paths = require('./paths')
 const commonConfig = require('./webpack.config.common')
 
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath
@@ -41,7 +42,9 @@ module.exports = configMerge(commonConfig, {
   devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
   entry: [
+    'babel-polyfill',
     paths.appIndexJs
+   
   ],
   output: {
     // The build folder.

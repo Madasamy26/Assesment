@@ -2,23 +2,80 @@ import React from 'react'
 import TobBar from './Header'
 import StickyLayout from './StickyLayout'
 import {
-    Container, Divider, Dropdown, Grid, Header, Icon, Image, 
+    Container, Divider, Dropdown, Grid, Header, Icon, Image,Table,
     List, Menu, Segment, Visibility,Item,Card,Form,Button,Modal,Input,Message
   } from 'semantic-ui-react'
 import OppurtunityEdit from './OppurtunityEdit' 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
+import axios from "axios";
+let property = require('./property');
+let service_url = property.url;
+let fetch_object = property.fetch_object;
+let access_token = property.access_token;
+let paramId = property.paramId;
 
 class MainContent extends  React.Component {
     constructor(props){
         super(props);
         this.state = {
-            startDate: moment()
+            oppurObj:{}
           };
         this.handleChangeDate = this.handleChangeDate.bind(this);
          
     }
+
+    componentDidMount(){
+
+      this.getOppurtunityData().then(data => {
+
+        //console.log('full object '+JSON.stringify(data));
+        
+        
+
+        var oppurObj = {
+          'title': data.data.title,
+          'applications_close_date': data.data.applications_close_date,
+          'earliest_start_date': data.data.earliest_start_date,
+          'latest_end_date': data.data.latest_end_date,
+          'description' : data.data.description,
+          'city': data.data.role_info.city,
+          'Selection_process': data.data.role_info.Selection_process,
+          'salary' : data.data.specifics_info,
+          'skills' : data.data.skills,
+          'backgrounds': data.data.backgrounds
+
+
+        }
+        console.log('obj2 '+JSON.stringify(data.title));
+
+        console.log('oppurtunity '+JSON.stringify(oppurObj));
+
+        this.setState({oppurObj})
+        console.log('state object '+JSON.stringify(this.state.oppurObj));
+
+      })
+
+    }
+
+    //* get data of an oppurtunity
+    async getOppurtunityData() {
+      try {
+        var oppurtunity = await axios({
+          method: 'get',
+          url: service_url + fetch_object +paramId+'?access_token='+access_token,
+        
+        });
+
+        return oppurtunity;
+
+      }
+      catch (e) {
+        console.error(e);
+      }
+
+    } 
 
     handleChangeDate(){
         this.setState({
@@ -31,57 +88,89 @@ class MainContent extends  React.Component {
     render() {
       return(
             
-         <div>
-             <Container>
-              <div>
-                <Message
-                    attached
-                    header='Welcome to our site!'
-                    content='This Form is an editable!'
-                />
-    <Form className='attached fluid segment'>
-      <Form.Group widths='equal'>
-        <Form.Input fluid label='Tiltle' placeholder='Title' value="raja" type='text' />
-        <Form.Input fluid label='Application Close Date' placeholder='Application Close Date' type='date' />
-        {/* <DatePicker
-         selected={this.state.startDate}
-         onChange={this.handleChangeDate}
-        /> */}
-      </Form.Group>
-      <Form.Group widths='equal'>
-        <Form.Input fluid label='Earliest Start date' placeholder='Earliest Start date' value="raja" type='text' />
-        <Form.Input fluid label='Latest End Date' placeholder='Latest End Date' value="raja" type='text' />
-        
-      </Form.Group>
-      <Form.Group widths='equal'>
-         <Form.Input fluid label='Descriptions' placeholder='Descriptions' type='text' />
-        <Form.Input fluid label='Backgrounds' placeholder='Backgrounds' type='text' />
-       
-        
-      </Form.Group>
-      <Form.Group widths='equal'>
-        <Form.Input fluid label='Skills' placeholder='Skills' value="raja" type='text' />   
-        <Form.Input fluid label='Selection Process' placeholder='Selection Process' value="raja" type='text' />  
-        
-
-      </Form.Group>
-      <Form.Group widths='equal'>
-        <Form.Input fluid label='Salary' placeholder='Salary' type='text' />
-        <Form.Input fluid label='City' placeholder='City' type='text' /> 
-      </Form.Group>
+        <div>
+          <Container>
+            <div>
+              <Message
+                attached
+                header='Welcome to our site!'
+                content='This Form is an editable!'
+              />
+              <Table fixed>
+    <Table.Header>
       
-      <Button color='blue'>Edit</Button>
-    </Form>
-    <Message attached='bottom' warning>
-      <Icon name='help' />
-      Click Edit Button to Edit The Form.
-    </Message>
-  </div>
+    </Table.Header>
+
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell>Title:</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.title}</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Application Close Date:</Table.Cell>
+        <Table.Cell>Approved</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Earliest Start Date:</Table.Cell>
+        <Table.Cell>Denied</Table.Cell>
+        
+      </Table.Row>
+
+      <Table.Row>
+        <Table.Cell>Latest End Date:</Table.Cell>
+        <Table.Cell>Approved</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Description:</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.description}</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Backgrounds:</Table.Cell>
+        <Table.Cell>Approved</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Skills:</Table.Cell>
+        <Table.Cell>Approved</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Selection Process:</Table.Cell>
+        <Table.Cell>selcetion process</Table.Cell>
+        
+      </Table.Row>
+
+      <Table.Row>
+        <Table.Cell>Salary:</Table.Cell>
+        <Table.Cell>Approved</Table.Cell>
+        
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>City:</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.city}</Table.Cell>
+        
+      </Table.Row>
+
+
+
+    </Table.Body>
+  </Table>
+
              
-                    
-                {/* <handleBtn /> */}
+              <Message attached='bottom' warning>
+                <Icon name='help' />
+                Click Edit Button to Edit The Form.
+    </Message>
+            </div>
+
+
+            {/* <handleBtn /> */}
           </Container>
-              {/* <Modal trigger={this.handleBtn}>
+          {/* <Modal trigger={this.handleBtn}>
                 <Modal.Header>Select a Photo</Modal.Header>
                     <Modal.Content image>
                   
@@ -96,7 +185,7 @@ class MainContent extends  React.Component {
                 </Modal.Description>
                 </Modal.Content>
             </Modal> */}
-         </div> 
+        </div> 
         );
         
         }
