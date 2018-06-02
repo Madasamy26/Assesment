@@ -10,11 +10,13 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import axios from "axios";
+
 let property = require('./property');
 let service_url = property.url;
 let fetch_object = property.fetch_object;
 let access_token = property.access_token;
 let paramId = property.paramId;
+let greeting = 'The oopurtunity Id is '+paramId;
 
 class MainContent extends  React.Component {
     constructor(props){
@@ -23,6 +25,7 @@ class MainContent extends  React.Component {
             oppurObj:{}
           };
         this.handleChangeDate = this.handleChangeDate.bind(this);
+        this.getOppurtunityData = this.getOppurtunityData.bind(this);
          
     }
 
@@ -31,8 +34,14 @@ class MainContent extends  React.Component {
       this.getOppurtunityData().then(data => {
 
         //console.log('full object '+JSON.stringify(data));
-        
-        
+       // alert('title'+data.data.title);
+        var skills = new Array();
+        var backgrounds = new Array();
+
+        skills = this.utillArr(data.data.skills).join();
+        backgrounds = this.utillArr(data.data.backgrounds).join();
+
+        //{this.dateIsoToString(new Date(this.state.oppurObj.applications_close_date))}
 
         var oppurObj = {
           'title': data.data.title,
@@ -41,33 +50,53 @@ class MainContent extends  React.Component {
           'latest_end_date': data.data.latest_end_date,
           'description' : data.data.description,
           'city': data.data.role_info.city,
-          'Selection_process': data.data.role_info.Selection_process,
-          'salary' : data.data.specifics_info,
-          'skills' : data.data.skills,
-          'backgrounds': data.data.backgrounds
-
+          'selection_process': data.data.role_info.selection_process,
+          'salary' : data.data.specifics_info.salary,
+          'skills' : skills,
+          'backgrounds': backgrounds
 
         }
-        console.log('obj2 '+JSON.stringify(data.title));
-
-        console.log('oppurtunity '+JSON.stringify(oppurObj));
-
+        
         this.setState({oppurObj})
-        console.log('state object '+JSON.stringify(this.state.oppurObj));
-
+        
       })
+
+        //alert('componentWillMount');
 
     }
 
+
+    //utility method for an fomatting data
+
+    utillArr(dataArr){
+      var arr = new Array();
+
+      for(let data of dataArr){
+        arr.push(data.name);
+      }
+     arr.push('test');
+      return arr;
+    }
+
+    // utility method for an date conversion 
+
+    dateIsoToString(date){
+      var str = "";  
+      str += (date.getMonth() + 1) + "/";  
+      str += date.getDate() + "/";  
+      str += date.getFullYear(); 
+
+      return str;
+    }
+
     //* get data of an oppurtunity
-    async getOppurtunityData() {
+   async getOppurtunityData() {
       try {
-        var oppurtunity = await axios({
+        var oppurtunity =  await axios({
           method: 'get',
-          url: service_url + fetch_object +paramId+'?access_token='+access_token,
+          url: service_url+fetch_object+paramId+'?access_token='+access_token,
         
         });
-
         return oppurtunity;
 
       }
@@ -94,7 +123,8 @@ class MainContent extends  React.Component {
               <Message
                 attached
                 header='Welcome to our site!'
-                content='This Form is an editable!'
+                content = {greeting}
+                
               />
               <Table fixed>
     <Table.Header>
@@ -109,18 +139,18 @@ class MainContent extends  React.Component {
       </Table.Row>
       <Table.Row>
         <Table.Cell>Application Close Date:</Table.Cell>
-        <Table.Cell>Approved</Table.Cell>
+        <Table.Cell>date</Table.Cell>
         
       </Table.Row>
       <Table.Row>
         <Table.Cell>Earliest Start Date:</Table.Cell>
-        <Table.Cell>Denied</Table.Cell>
+        <Table.Cell>date</Table.Cell>
         
       </Table.Row>
 
       <Table.Row>
         <Table.Cell>Latest End Date:</Table.Cell>
-        <Table.Cell>Approved</Table.Cell>
+        <Table.Cell>date</Table.Cell>
         
       </Table.Row>
       <Table.Row>
@@ -130,23 +160,23 @@ class MainContent extends  React.Component {
       </Table.Row>
       <Table.Row>
         <Table.Cell>Backgrounds:</Table.Cell>
-        <Table.Cell>Approved</Table.Cell>
-        
+        <Table.Cell>{this.state.oppurObj.backgrounds}</Table.Cell>
+      
       </Table.Row>
       <Table.Row>
         <Table.Cell>Skills:</Table.Cell>
-        <Table.Cell>Approved</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.skills}</Table.Cell>
         
       </Table.Row>
       <Table.Row>
         <Table.Cell>Selection Process:</Table.Cell>
-        <Table.Cell>selcetion process</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.selection_process}</Table.Cell>
         
       </Table.Row>
 
       <Table.Row>
         <Table.Cell>Salary:</Table.Cell>
-        <Table.Cell>Approved</Table.Cell>
+        <Table.Cell>{this.state.oppurObj.salary}</Table.Cell>
         
       </Table.Row>
       <Table.Row>
@@ -190,8 +220,6 @@ class MainContent extends  React.Component {
         
         }
       
-      
-
 }
 
 export default MainContent;
